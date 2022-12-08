@@ -17,6 +17,7 @@ class EncoderConfig(object):
         self.no_scale_embedding = kwargs.pop("no_scale_embedding", True)
         self.layernorm_embedding = kwargs.pop("layernorm_embedding", False)
         self.moe_freq = kwargs.pop("moe_freq", 0)
+        self.encoder_moe_layers = kwargs.pop("encoder_moe_layers", "")
         self.moe_top1_expert = kwargs.pop("moe_top1_expert", False)
         self.moe_expert_count = kwargs.pop("moe_expert_count", 0)
         self.moe_gating_use_fp32 = kwargs.pop("moe_gating_use_fp32", True)
@@ -59,7 +60,7 @@ class EncoderConfig(object):
         if self.use_xmoe:
             self.moe_normalize_gate_prob_before_dropping = True
             self.moe_second_expert_policy = "random"
-            assert self.moe_freq > 0 and self.moe_expert_count > 0
+            assert (self.moe_freq > 0 or self.encoder_moe_layers) and self.moe_expert_count > 0
 
     def override(self, args):
         for hp in self.__dict__.keys():
@@ -148,6 +149,7 @@ class EncoderDecoderConfig(object):
         self.no_scale_embedding = kwargs.pop("no_scale_embedding", True)
         self.layernorm_embedding = kwargs.pop("layernorm_embedding", False)
         self.moe_freq = kwargs.pop("moe_freq", 0)
+        self.encoder_moe_layers = kwargs.pop("encoder_moe_layers", 0)
         self.moe_top1_expert = kwargs.pop("moe_top1_expert", False)
         self.moe_expert_count = kwargs.pop("moe_expert_count", 0)
         self.moe_gating_use_fp32 = kwargs.pop("moe_gating_use_fp32", True)
@@ -190,7 +192,7 @@ class EncoderDecoderConfig(object):
         if self.use_xmoe:
             self.moe_normalize_gate_prob_before_dropping = True
             self.moe_second_expert_policy = "random"
-            assert self.moe_freq > 0 and self.moe_expert_count > 0
+            assert (self.moe_freq > 0 or self.encoder_moe_layers) and self.moe_expert_count > 0
 
     def override(self, args):
         for hp in self.__dict__.keys():

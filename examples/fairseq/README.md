@@ -236,3 +236,21 @@ python -m torch.distributed.launch --nproc_per_node=2 --nnodes=1 train.py \
     --use-xmoe \
     --max-tokens 4096 --fp16
 ```
+
+### Sparse (MoE) Model - xMoE-encoder
+```bash
+
+cd examples/fairseq/
+python -m torch.distributed.launch --nproc_per_node=2 --nnodes=1 train.py \
+    ${PATH_TO_DATA} \
+    --arch mt_base --share-decoder-input-output-embed \
+    --optimizer adam --adam-betas '(0.9, 0.98)' --clip-norm 0.0 \
+    --lr 5e-4 --lr-scheduler inverse_sqrt --warmup-updates 4000 \
+    --dropout 0.3 --weight-decay 0.0001 \
+    --moe-expert-count 2 --encoder-moe-layers '2,4' \
+    --moe-gating-use-fp32 --moe-second-expert-policy random --moe-normalize-gate-prob-before-dropping \
+    --moe-eval-capacity-token-fraction -1.0 \
+    --criterion moe_cross_entropy --moe-gate-loss-wt 0.01 --moe-gate-loss-combine-method sum \
+    --use-xmoe \
+    --max-tokens 4096 --fp16
+```

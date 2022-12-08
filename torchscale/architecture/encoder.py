@@ -194,8 +194,11 @@ class Encoder(nn.Module):
         self.layers = nn.ModuleList([])
 
         moe_freq = args.moe_freq
+        encoder_moe_layers = set([int(i) for i in args.encoder_moe_layers.split(",")])
         for i in range(args.encoder_layers):
             is_moe_layer = moe_freq != 0 and (i + 1) % moe_freq == 0
+            if i in encoder_moe_layers:
+                is_moe_layer = True
             self.layers.append(
                 self.build_encoder_layer(
                     args,
