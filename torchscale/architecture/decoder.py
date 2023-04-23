@@ -422,11 +422,13 @@ class Decoder(nn.Module):
 
         for idx, layer in enumerate(self.layers):
             if incremental_state is None:
+                # https://github.com/HazyResearch/flash-attention/blob/main/flash_attn/modules/mha.py#L221
+                # "triu_tril_cuda_template" not implemented for 'BFloat16'
                 self_attn_mask = torch.triu(
-                    torch.zeros([x.size(1), x.size(1)])
+                    torch.zeros([x.size(1), x.size(1)], device=x.device)
                     .float()
-                    .fill_(float("-inf"))
-                    .type_as(x),
+                    .fill_(float("-inf")),
+                    # .type_as(x),
                     1,
                 )
             else:
